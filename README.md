@@ -15,5 +15,5 @@ Results
 Semgrep completed successfully with exit code 0
 
 Conclusion
-Semgrep found no vulnerabilities based on the selected ruleset. This indicates that the scanned files do not contain patterns commonly associated with security weaknesses.
+Semgrep found no vulnerabilities based on the selected ruleset. This indicates that the scanned files do not contain patterns commonly associated with security weaknesses. 
   
