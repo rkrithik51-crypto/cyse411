@@ -1,0 +1,46 @@
+name: DAST - OWASP ZAP Full Scan (Canonicalization)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: canonicalization-example
+        run: npm install || true
+
+      - name: Start Canonicalization Server
+        working-directory: canonicalization-example
+        run: |
+          node server.js &
+          echo "Waiting for server on port 4000..."
+          for i in {1..40}; do
+            if curl -s http://localhost:4000 > /dev/null; then
+              echo "Server is UP!"
+              break
+            fi
+            sleep 1
+          done
+      - name: Run OWASP ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.13.0
+        with:
+          target: "http://localhost:4000"
+          fail_action: false
+          allow_issue_writing: false
+
+      - name: Upload ZAP Scan Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap_scan_canonicalization
+          path: report.html
