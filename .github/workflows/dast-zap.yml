@@ -1,4 +1,4 @@
-name: DAST - OWASP ZAP Full Scan (idor)
+name: DAST - OWASP ZAP Full Scan (FastBank Auth Lab)
 
 on:
   workflow_dispatch:
@@ -17,16 +17,16 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        working-directory: idor
+        working-directory: fastbank-auth-lab/src
         run: npm install || true
 
-      - name: Start IDOR Server
-        working-directory: idor
+      - name: Start FastBank Auth Lab Server
+        working-directory: fastbank-auth-lab/src
         run: |
           node server.js &
-          echo "Waiting for server on port 3000..."
+          echo "Waiting for server on port 3001..."
           for i in {1..40}; do
-            if curl -s http://localhost:3000 > /dev/null; then
+            if curl -s http://localhost:3001 > /dev/null; then
               echo "Server is UP!"
               break
             fi
@@ -36,12 +36,12 @@ jobs:
       - name: Run OWASP ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.13.0
         with:
-          target: "http://localhost:3000"
+          target: "http://localhost:3001"
           fail_action: false
           allow_issue_writing: false
 
       - name: Upload ZAP Scan Report
         uses: actions/upload-artifact@v4
         with:
-          name: zap_scan_idor
+          name: zap_scan_fastbank_auth_lab
           path: report.html
